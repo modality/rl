@@ -21,11 +21,6 @@ public class Player extends Actor {
     stats.attrSTR = 2;
   }
 
-  public void attack(Actor target) {
-    System.out.println(name+" attacks "+target.name+"!");
-    target.takeDamage(stats.attrSTR, this);
-  }
-
   public void takeDamage(int amount, Actor source) {
     System.out.println(name+" takes "+amount+" damage!");
     stats.resHP -= amount;

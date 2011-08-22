@@ -44,10 +44,6 @@ public class NPC extends Actor {
 	    }
 	  }
 
-	  public void attack(Actor target) {
-	    System.out.println(name+" attacks "+target.name+"!");
-	    target.takeDamage(stats.attrSTR, this);
-	  }
 
 	  public void takeDamage(int amount, Actor source) {
 	    stats.resHP -= amount;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import rl.world.map.GameMap;
+import rl.util.Chance;
 import rl.util.Scheduler;
 
 public abstract class Actor extends GameObject {
@@ -33,13 +34,24 @@ public abstract class Actor extends GameObject {
   }
 
   public abstract void scheduleMove(Scheduler s);
-  public abstract void attack(Actor target);
   public abstract void takeDamage(int amount, Actor source);
 
   public float turnDelay() {
     return 100.0f * (float) Math.pow(0.9f, (stats.attrDEX-10));
   }
   
+  public void attack(Actor target) {
+    System.out.println(name+" attacks "+target.name+"!");
+    int dieRoll = Chance.rollDie(1, 20);
+    if(dieRoll == 20) {
+      int damage = stats.getDamage() * 2;
+      target.takeDamage(damage, this);
+    } else if (dieRoll + stats.getAttackRating() > target.stats.getDefenseRating()) {
+      int damage = stats.getDamage();
+	    target.takeDamage(damage, this);
+	  }
+	}
+
   public ArrayList<GameObject> getInventory(String type) {
     ArrayList<GameObject> typedItems = new ArrayList<GameObject>();
     Iterator<GameObject> itr = inventory.iterator();

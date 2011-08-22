@@ -11,11 +11,9 @@ import rl.world.GameWorldFactory;
 import rl.world.object.*; 
 
 public class RogueLike extends PApplet {
-
 	private static final long serialVersionUID = -5459930499980402593L;
 	public BFont bfont;
 	public GameWorld gw;
-	public Player player;
 	public String savefile;
 	public UiHandler uih;
 	public SaveFileHandler sfh;
@@ -34,10 +32,16 @@ public class RogueLike extends PApplet {
   
   frameRate(24);
 
-  player = new Player(0, 0, '@', Colors.WHITE, Colors.BLACK, "Throg");
+  Player player = new Player(0, 0, '@', Colors.WHITE, Colors.BLACK, "Throg");
+  player.stats.attrSTR = 14;
+  player.stats.attrDEX = 14;
+  player.stats.resHP = 10;
   gw.addPlayer(player);
   
   NPC npc = new NPC(floor(random(64)), floor(random(48)), PApplet.parseChar(235), Colors.PURPLE, Colors.BLACK, "Wumpus");
+  npc.stats.attrSTR = 10;
+  npc.stats.attrDEX = 10;
+  npc.stats.resHP = 4;
   gw.addActor(npc);
   
   Weapon sword = new Weapon(player.x-1, player.y-1, '/', Colors.GRAY, Colors.BLACK, "sword", 1, 6, 0); 
