@@ -2,11 +2,17 @@ package rl.world.object;
 
 import rl.util.Chance;
 import rl.util.Colors;
+import rl.util.Point;
 import rl.util.Scheduler;
+import rl.util.ai.AI;
 import rl.world.events.NPCEvent;
+import rl.world.map.Obstacles;
+import rlforj.math.Point2I;
+import rlforj.pathfinding.AStar;
 
 public class NPC extends Actor {
-	  Actor target;
+	  public Actor target;
+	  public AI ai;
 
 	  public NPC() {}
 
@@ -16,31 +22,8 @@ public class NPC extends Actor {
 	  }
 
 	  public void takeTurn() {
-	    if(state.equals("awake")) {
-	      int dieRoll = Chance.rollDie(1, 10);
-
-	      if(dieRoll > 1) {
-	        int directionX = Chance.from(-1, 1), directionY = Chance.from(-1, 1);
-	        
-	        if(gmap.passable(x+directionX, y+directionY)) {
-	          x += directionX;
-	          y += directionY;
-	        }
-	      } else {
-	        state = "asleep";
-	        gmap.textEvent(name+" fell asleep.");
-	      }
-	    } else if (state.equals("asleep")) {
-	      int dieRoll = Chance.rollDie(1, 10);
-
-	      if(dieRoll <= 1) {
-	        state = "awake";
-	        gmap.textEvent(name+" woke up.");
-	      }
-	    } else if (state.equals("hostile")) {
-	      if(Math.abs(target.x - x) <= 1 && Math.abs(target.y - y) <= 1) {
-	        attack(target);
-	      }
+	    if(ai != null) {
+  	    ai.action(this);
 	    }
 	  }
 
@@ -51,7 +34,7 @@ public class NPC extends Actor {
 	    target = source;
 	    state = "hostile";
 
-	    System.out.println(name+" takes "+amount+" damage!");
+	    gmap.textEvent(name+" takes "+amount+" damage!");
 
 	    if(stats.resHP <= 0) {
 	      die();
@@ -60,11 +43,11 @@ public class NPC extends Actor {
 
 	  public void die() {
 	    System.out.println(name+" has died.");
-	    gmap.actors.gameObjects.remove(this);
-	    gmap.actors.updated = true;
+	    gmap.removeActor(this);
+	    gmap.getActors().updated = true;
 	    Item corpse = new Item(x, y, chr, Colors.GRAY, Colors.RED, name+" corpse");
 	    corpse.has_bg = true;
-	    gmap.objects.addGameObject(corpse);
+	    gmap.getObjects().addGameObject(corpse);
 	  }
 
 	  public void scheduleMove(Scheduler s) {
@@ -74,6 +57,18 @@ public class NPC extends Actor {
 	  public boolean is(String what) {
 	    return what.equals("NPC");
 	  }
+
+    public void moveTo(Point p) {
+      Obstacles obstacles = new Obstacles(this.gmap);
+      AStar pathfind = new AStar(obstacles, gmap.map_w, gmap.map_h, true);
+      
+      Point2I[] p2i = pathfind.findPath(this.x, this.y, p.x, p.y);
+      if(p2i.length > 1) {
+        this.x = p2i[1].x;
+        this.y = p2i[1].y;
+      }
+      this.gmap.getActors().updated = true;
+    }
 	  
 
 	}

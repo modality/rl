@@ -15,12 +15,16 @@ import rl.world.events.*;
 import rl.world.map.layers.*;
 import rl.util.*;
 import rl.util.generators.DungeonBuilder;
+import rlforj.los.ILosAlgorithm;
+import rlforj.los.PrecisePermissive;
 
 public class GameMap extends ViewLayer implements SaveableObject {
 	  public int map_w, map_h;
 	  public Terrain[][] terrain;
 	  public Terrains terras;
-	  public GameObjectLayer objects, actors;
+	  private GameObjectLayer objects;
+    private GameObjectLayer actors;
+    public Player player;
 	  public FOVLayer fov;
 
 	  public GameMap() {
@@ -35,8 +39,8 @@ public class GameMap extends ViewLayer implements SaveableObject {
 	    this.terrain = new Terrain[map_w][map_h];
 	    this.terras = new Terrains(rl.bfont);
 	    
-	    objects = new GameObjectLayer(rl, map_w, map_h);
-	    actors = new GameObjectLayer(rl, map_w, map_h);
+	    setObjects(new GameObjectLayer(rl, map_w, map_h));
+	    setActors(new GameObjectLayer(rl, map_w, map_h));
 	    updated = true;
 
 	    DungeonBuilder db = new DungeonBuilder(this);
@@ -94,6 +98,11 @@ public class GameMap extends ViewLayer implements SaveableObject {
 	      return terrain[x][y].passable && actors.passable(x, y) && objects.passable(x, y);
 	    }
 	    return false;
+	  }
+	  
+	  public boolean visiblity(Point a, Point b) {
+	    ILosAlgorithm algo = new PrecisePermissive();
+	    return algo.existsLineOfSight(fov, a.x, a.y, b.x, b.y, false);
 	  }
 
 	  public void textEvent(String text) {
@@ -199,4 +208,44 @@ public class GameMap extends ViewLayer implements SaveableObject {
 
 	    return map;
 	  }
+
+    public GameObjectLayer getActors() {
+      return actors;
+    }
+    
+    public void addActor(Actor a) {
+      actors.addGameObject(a);
+      actors.updated = true;
+      a.gmap = this;
+      if(a.is("Player")) {
+        player = (Player) a;
+      }
+    }
+    
+    public void removeActor(Actor a) {
+      actors.gameObjects.remove(a);
+      actors.updated = true;
+    }
+
+    public void setActors(GameObjectLayer actors) {
+      this.actors = actors;
+    }
+
+    public GameObjectLayer getObjects() {
+      return objects;
+    }
+
+    public void setObjects(GameObjectLayer objects) {
+      this.objects = objects;
+    }
+
+    public void addObject(GameObject go) {
+      objects.addGameObject(go);
+      objects.updated = true;
+    }
+    
+    public void removeObject(GameObject go) {
+      objects.gameObjects.remove(go);
+      objects.updated = true;
+    }
 	}

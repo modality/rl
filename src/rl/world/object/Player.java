@@ -22,7 +22,7 @@ public class Player extends Actor {
   }
 
   public void takeDamage(int amount, Actor source) {
-    System.out.println(name+" takes "+amount+" damage!");
+    gmap.textEvent(name+" takes "+amount+" damage!");
     stats.resHP -= amount;
 
     if(stats.resHP <= 0) {

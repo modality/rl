@@ -56,8 +56,8 @@ public class GameWorldFactory {
 	      JSONArray objects_json = map_json.getJSONArray("objects");
 	      JSONArray actors_json = map_json.getJSONArray("npcs");
 
-	      gmap.objects = createGameObjectLayer(objects_json, gmap);
-	      gmap.actors = createGameObjectLayer(actors_json, gmap);
+	      gmap.setObjects(createGameObjectLayer(objects_json, gmap));
+	      gmap.setActors(createGameObjectLayer(actors_json, gmap));
 	    } catch (JSONException je) {
 	      System.out.println("error in createGameMap");
 	      System.out.println(je);

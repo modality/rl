@@ -6,6 +6,7 @@ import rl.util.BFont;
 import rl.util.Colors;
 import rl.util.SaveFileHandler;
 import rl.util.UiHandler;
+import rl.util.ai.AttackPlayerAI;
 import rl.world.GameWorld;
 import rl.world.GameWorldFactory;
 import rl.world.object.*; 
@@ -41,7 +42,8 @@ public class RogueLike extends PApplet {
   NPC npc = new NPC(floor(random(64)), floor(random(48)), PApplet.parseChar(235), Colors.PURPLE, Colors.BLACK, "Wumpus");
   npc.stats.attrSTR = 10;
   npc.stats.attrDEX = 10;
-  npc.stats.resHP = 4;
+  npc.stats.resHP = 20;
+  npc.ai = new AttackPlayerAI(player);
   gw.addActor(npc);
   
   Weapon sword = new Weapon(player.x-1, player.y-1, '/', Colors.GRAY, Colors.BLACK, "sword", 1, 6, 0); 

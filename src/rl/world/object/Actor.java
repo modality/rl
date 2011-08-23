@@ -32,6 +32,10 @@ public abstract class Actor extends GameObject {
   public String describe() {
     return this.name+" is here";
   }
+  
+  public boolean canSee(Actor a) {
+    return gmap.visiblity(this.getPosition(), a.getPosition());
+  }
 
   public abstract void scheduleMove(Scheduler s);
   public abstract void takeDamage(int amount, Actor source);
@@ -41,14 +45,17 @@ public abstract class Actor extends GameObject {
   }
   
   public void attack(Actor target) {
-    System.out.println(name+" attacks "+target.name+"!");
+    gmap.textEvent(name+" attacks "+target.name+"!");
     int dieRoll = Chance.rollDie(1, 20);
+
     if(dieRoll == 20) {
       int damage = stats.getDamage() * 2;
       target.takeDamage(damage, this);
     } else if (dieRoll + stats.getAttackRating() > target.stats.getDefenseRating()) {
       int damage = stats.getDamage();
 	    target.takeDamage(damage, this);
+	  } else {
+	    gmap.textEvent(name+" misses "+target.name+"!");
 	  }
 	}
 

@@ -71,13 +71,12 @@ public class GameWorld implements SaveableObject {
 	  }
 
 	  public void addActor(Actor a) {
-	    gmap.actors.addGameObject(a);
-	    a.gmap = gmap;
+	    gmap.addActor(a);
 	    a.scheduleMove(scheduler);
 	  }
 
 	  public void addGameObject(GameObject go) {
-	    gmap.objects.addGameObject(go);
+	    gmap.addObject(go);
 	  }
 
 	  public void draw(boolean withUpdate) {
@@ -99,7 +98,7 @@ public class GameWorld implements SaveableObject {
 	      player.y = y;
 	      rl.uih.addMessage(gmap.describeSquare(player.x, player.y, false));
 	    }
-	    gmap.actors.updated = true;
+	    gmap.getActors().updated = true;
 	    gmap.fov.updated = true;
 	    gmap.fov.setPlayerPos(player.getPosition());
 	  }
@@ -180,11 +179,11 @@ public class GameWorld implements SaveableObject {
 	        } else {
 	          if(key == 10 || keyCode == PConstants.ENTER || keyCode == PConstants.RETURN) {
 	            if(!cursors.getPosition().equals(player.getPosition())) {
-	              ArrayList<GameObject> targets = gmap.actors.objectsAt(cursors.getPosition());
+	              ArrayList<GameObject> targets = gmap.getActors().objectsAt(cursors.getPosition());
 	              if(targets.size() > 0) {
 	                NPC target = (NPC) targets.get(0);
 	                player.attack(target);
-	                gmap.actors.updated = true;
+	                gmap.getActors().updated = true;
 	                changeMode(GameConstants.MODE_WALK);
 	                valid_turn_input = true;
 	              }
@@ -202,8 +201,7 @@ public class GameWorld implements SaveableObject {
 	          GameObject selectedItem;
 	          selectedItem = (GameObject) rl.uih.currentMenu.handleInput(key, keyCode);
 	          if(selectedItem != null) {
-        	    gmap.objects.gameObjects.remove(selectedItem);
-        	    gmap.objects.updated = true;
+        	    gmap.removeObject(selectedItem);
         	    player.inventory.add(selectedItem);
         	    changeMode(GameConstants.MODE_WALK);
         	    rl.uih.clearMenu();
@@ -240,7 +238,7 @@ public class GameWorld implements SaveableObject {
 	      cursors.setPlayerPosition(player.x, player.y);
 	      lookAround();
 	    } else if(mode == GameConstants.MODE_GRAB) {
-  	    ArrayList<GameObject> items = gmap.objects.objectsAt(player.getPosition());
+  	    ArrayList<GameObject> items = gmap.getObjects().objectsAt(player.getPosition());
   	    if(items.size() > 0) {
   	      GameObjectMenu gmenu = new GameObjectMenu(items);
   	      rl.uih.showMenu(gmenu);
